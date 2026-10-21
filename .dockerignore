@@ -1,0 +1,17 @@
+.git
+.github
+.env
+.env.*
+secrets
+config
+data
+grafana
+docs
+tests
+api-spec*
+**/__pycache__
+**/*.pyc
+.venv
+venv
+.pytest_cache
+.ruff_cache

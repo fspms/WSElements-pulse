@@ -1,0 +1,20 @@
+{
+  "items": [
+    {
+      "organizationId": "00000000-0000-4000-8000-0000000000a1",
+      "severity": "critical",
+      "riskLevel": "severe",
+      "riskScore": 97.1,
+      "incidentPublicId": "1000-DEMO0002",
+      "createdTimestamp": "2026-01-11T10:00:00.000Z",
+      "name": "Incident in DEMO-SRV-002",
+      "incidentId": "22222222-2222-4222-8222-222222222222",
+      "initialReceivedTimestamp": "2026-01-11T09:59:00.000Z",
+      "resolution": "incident",
+      "updatedTimestamp": "2026-01-12T12:30:00.000Z",
+      "status": "closed",
+      "categories": ["CREDENTIAL_THEFT", "LATERAL_MOVEMENT"],
+      "sources": ["endpoint"]
+    }
+  ]
+}

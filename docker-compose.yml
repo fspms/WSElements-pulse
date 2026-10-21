@@ -1,0 +1,73 @@
+# WSElements-pulse: collector + PostgreSQL + Grafana.
+#   cp .env.example .env   # then fill in values
+#   docker compose up -d
+# Demo without an API key:
+#   docker compose up -d db grafana && docker compose run --rm collector seed
+
+name: elements-pulse
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: pulse
+      POSTGRES_USER: pulse
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      GRAFANA_DB_PASSWORD: ${GRAFANA_DB_PASSWORD:?set GRAFANA_DB_PASSWORD in .env}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./docker/postgres/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pulse -d pulse"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    # Not published on the host by default. Uncomment to connect a local client.
+    # ports: ["127.0.0.1:5432:5432"]
+
+  collector:
+    build: .
+    image: elements-pulse:local
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://pulse:${POSTGRES_PASSWORD}@db:5432/pulse
+      ELEMENTS_CLIENT_ID: ${ELEMENTS_CLIENT_ID:-}
+      ELEMENTS_CLIENT_SECRET: ${ELEMENTS_CLIENT_SECRET:-}
+      PULSE_CONFIG_FILE: ${PULSE_CONFIG_FILE:-}
+      PULSE_LOG_LEVEL: ${PULSE_LOG_LEVEL:-INFO}
+      PULSE_ORGANIZATIONS__IDS: ${PULSE_ORGANIZATIONS__IDS:-}
+      PULSE_ORGANIZATIONS__DISCOVER: ${PULSE_ORGANIZATIONS__DISCOVER:-false}
+    volumes:
+      - ./config:/config:ro
+    stop_grace_period: 30s
+    # To use Docker secrets instead of env vars, see docs/configuration.md.
+
+  grafana:
+    image: grafana/grafana-oss:12.4.3
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:?set GRAFANA_ADMIN_PASSWORD in .env}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_ANALYTICS_REPORTING_ENABLED: "false"
+      GF_ANALYTICS_CHECK_FOR_UPDATES: "false"
+      GF_NEWS_NEWS_FEED_ENABLED: "false"
+      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /var/lib/grafana/dashboards/overview.json
+      PULSE_GRAFANA_DB_PASSWORD: ${GRAFANA_DB_PASSWORD}
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+    ports:
+      - "${GRAFANA_BIND_ADDRESS:-127.0.0.1}:${GRAFANA_PORT:-3000}:3000"
+
+volumes:
+  pgdata:
+  grafana-data:

@@ -1,0 +1,23 @@
+{
+  "items": [
+    {
+      "id": "dddddddd-0000-4000-8000-000000000001",
+      "name": "DEMO-WS-001",
+      "type": "computer",
+      "state": "active",
+      "company": {"id": "00000000-0000-4000-8000-0000000000a1", "name": "Demo Org", "type": "company"},
+      "os": {"name": "Windows 11 Pro", "version": "10.0.22631", "endOfLife": false},
+      "clientVersion": "25.4",
+      "protectionStatus": "protected",
+      "protectionStatusOverview": "allOk",
+      "malwareState": "enabled",
+      "firewallState": "enabled",
+      "patchOverallState": "importantUpdatesInstalled",
+      "online": true,
+      "lastUser": "user01@example.com",
+      "subscription": {"key": "DEMO-DEMO-DEMO-DEMO-DEMO", "productVariant": "computerprotection_premium_edr"},
+      "statusUpdateTimestamp": "2026-01-15T10:00:00.000Z",
+      "registrationTimestamp": "2025-06-01T08:00:00.000Z"
+    }
+  ]
+}

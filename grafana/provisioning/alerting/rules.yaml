@@ -1,0 +1,120 @@
+# Example alert rules. Add a contact point (Alerting > Contact points) to receive them;
+# by default Grafana sends to its built-in default contact point (no-op until configured).
+apiVersion: 1
+
+groups:
+  - orgId: 1
+    name: elements-pulse
+    folder: WSElements-pulse
+    interval: 5m
+    rules:
+      - uid: pulse-new-critical-incident
+        title: New critical incident
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 900
+              to: 0
+            datasourceUid: elements-pulse-pg
+            model:
+              refId: A
+              editorMode: code
+              rawQuery: true
+              format: table
+              # Incidents first collected in the last 15 minutes with severe risk / critical severity.
+              rawSql: >-
+                SELECT count(*)::float AS new_critical
+                FROM incidents
+                WHERE first_collected_at > now() - interval '15 minutes'
+                  AND (risk_level = 'severe' OR severity = 'critical')
+                  AND status <> 'closed'
+          - refId: B
+            datasourceUid: __expr__
+            relativeTimeRange:
+              from: 900
+              to: 0
+            model:
+              refId: B
+              type: reduce
+              expression: A
+              reducer: last
+              settings:
+                mode: replaceNN
+                replaceWithValue: 0
+          - refId: C
+            datasourceUid: __expr__
+            relativeTimeRange:
+              from: 900
+              to: 0
+            model:
+              refId: C
+              type: threshold
+              expression: B
+              conditions:
+                - evaluator:
+                    type: gt
+                    params: [0]
+        noDataState: OK
+        execErrState: Error
+        for: 0s
+        annotations:
+          summary: "{{ $values.B.Value }} new critical incident(s) in WithSecure Elements"
+          description: >-
+            New incidents with risk level 'severe' or severity 'critical' were collected
+            in the last 15 minutes. Open the Incidents dashboard for details.
+        labels:
+          severity: critical
+          source: elements-pulse
+        isPaused: false
+
+      - uid: pulse-collector-stale
+        title: Elements Pulse collector stale
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: elements-pulse-pg
+            model:
+              refId: A
+              editorMode: code
+              rawQuery: true
+              format: table
+              rawSql: SELECT count(*)::float AS stale FROM v_collector_health WHERE stale
+          - refId: B
+            datasourceUid: __expr__
+            relativeTimeRange:
+              from: 600
+              to: 0
+            model:
+              refId: B
+              type: reduce
+              expression: A
+              reducer: last
+              settings:
+                mode: replaceNN
+                replaceWithValue: 0
+          - refId: C
+            datasourceUid: __expr__
+            relativeTimeRange:
+              from: 600
+              to: 0
+            model:
+              refId: C
+              type: threshold
+              expression: B
+              conditions:
+                - evaluator:
+                    type: gt
+                    params: [0]
+        noDataState: OK
+        execErrState: Error
+        for: 15m
+        annotations:
+          summary: "{{ $values.B.Value }} collector(s) have not succeeded for 3 intervals"
+        labels:
+          severity: warning
+          source: elements-pulse
+        isPaused: false

@@ -1,0 +1,55 @@
+# Example collector configuration. Copy to config/config.yaml and set
+# PULSE_CONFIG_FILE=/config/config.yaml in .env.
+#
+# Secrets (client id/secret, database URL) are NOT allowed here: use environment variables.
+# Any value below can also be overridden with an environment variable, for example
+# PULSE_COLLECTORS__SECURITY_EVENTS__INTERVAL_MINUTES=10
+
+log_level: INFO
+log_format: json          # json | console
+
+api:
+  base_url: https://api.connect.withsecure.com
+  request_delay_seconds: 0.25   # minimum delay between two requests (all collectors)
+  timeout_seconds: 30
+  max_retries: 5                # on 429 / 5xx / network errors (exponential backoff + jitter)
+
+organizations:
+  # Empty list = the default organization of the API client.
+  ids:
+    - 00000000-0000-4000-8000-000000000001   # placeholder, replace with your org UUID
+  # true = poll every company found under the organizations above (MSP / partner use case).
+  discover: false
+  discovery_interval_minutes: 60
+
+collectors:
+  incidents:
+    enabled: true
+    interval_minutes: 5
+    backfill_days: 30
+    overlap_minutes: 10
+  detections:                   # one extra API call per new/changed incident
+    enabled: true
+    interval_minutes: 5
+    max_incidents_per_run: 50
+  security_events:
+    enabled: true
+    interval_minutes: 5
+    backfill_days: 7
+    overlap_minutes: 10
+    engine_groups: [epp, edr]   # also available: ecp (Collaboration Protection), xm (Exposure Mgmt)
+  devices:
+    enabled: true
+    interval_minutes: 15
+    states: [active, blocked, inactive]
+  audit_logs:
+    enabled: true
+    interval_minutes: 15
+    backfill_days: 7
+
+retention:
+  api_requests_days: 14
+  collector_runs_days: 30
+
+health:
+  port: 8080

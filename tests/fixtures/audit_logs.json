@@ -1,0 +1,19 @@
+{
+  "items": [
+    {
+      "id": "demo-audit-1",
+      "serverTimestamp": "2026-01-15T13:16:51.807Z",
+      "transactionId": "0000-demo-audit",
+      "namespace": "elements-core",
+      "action": "login",
+      "username": "admin@example.com",
+      "organization": {
+        "id": "00000000-0000-4000-8000-0000000000a1",
+        "name": "Demo Org",
+        "orgPath": "00000000-0000-4000-8000-0000000000a1/"
+      },
+      "target": {"id": "admin@example.com", "name": "admin@example.com"},
+      "description": "Administrator \"admin@example.com\" logged in"
+    }
+  ]
+}

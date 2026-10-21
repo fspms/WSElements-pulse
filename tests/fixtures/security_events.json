@@ -1,0 +1,33 @@
+{
+  "items": [
+    {
+      "id": "aaaaaaaa-0000-4000-8000-000000000001_0",
+      "action": "blocked",
+      "engine": "deepGuard",
+      "severity": "critical",
+      "serverTimestamp": "2026-01-15T10:00:00.000Z",
+      "persistenceTimestamp": "2026-01-15T10:00:02.000Z",
+      "clientTimestamp": "2026-01-15T09:59:58.000Z",
+      "eventTransactionId": "0000-demo0001",
+      "acknowledged": false,
+      "message": "Demo event",
+      "description": "DeepGuard event",
+      "organization": {"id": "00000000-0000-4000-8000-0000000000b2", "name": "Demo Child Org"},
+      "target": {"id": "dddddddd-0000-4000-8000-000000000001", "name": "DEMO-WS-001"},
+      "device": {"id": "dddddddd-0000-4000-8000-000000000001", "name": "DEMO-WS-001"},
+      "userName": "demo-user",
+      "details": {"alertType": "process.behavior.blocked", "infectionName": "Trojan.Demo.Generic"}
+    },
+    {
+      "id": "aaaaaaaa-0000-4000-8000-000000000002_0",
+      "action": "reported",
+      "engine": "realtimeScanning",
+      "severity": "warning",
+      "serverTimestamp": "2026-01-15T11:00:00.000Z",
+      "persistenceTimestamp": "2026-01-15T11:00:01.000Z",
+      "message": "Demo event 2",
+      "description": "Real-time scanning event",
+      "organization": {"id": "00000000-0000-4000-8000-0000000000a1", "name": "Demo Org"}
+    }
+  ]
+}

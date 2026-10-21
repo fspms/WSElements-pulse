@@ -1,0 +1,37 @@
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+secrets/
+*.secret
+config/*.yaml
+!config/config.example.yaml
+
+# Third-party API specification (kept locally, not redistributed)
+api-spec.yaml
+api-spec*.yaml
+api-spec*.json
+
+# Data volumes / dumps
+data/
+pgdata/
+*.dump
+*.sql.gz
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+build/
+dist/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Editors / OS
+.idea/
+.vscode/
+.DS_Store
